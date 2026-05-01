@@ -323,4 +323,125 @@ However, the **revised version is substantially more defensible** for the follow
 
 ---
 
+---
+
+## 9. Combined Model: NIPT Type as a Factor (No Sample Doubling)
+
+If NIPT and NIPT-SGD are analyzed within a **single combined model** rather than as separate analyses, sample doubling is unnecessary. There are three approaches:
+
+### Approach A: NIPT Type as a Simple Covariate
+
+Add a dummy variable T (0 = NIPT, 1 = NIPT-SGD) to the covariate block. NIPT type's effect on outcomes is partialled out, but you **assume the message framing effects are identical** for NIPT and NIPT-SGD participants.
+
+- k = 31 (23 covariates + T + 7 factorial terms)
+- Simple, no sample increase
+- **Cannot test** whether framing effects differ by NIPT type
+
+### Approach B: NIPT Type Fully Crossed (Recommended for Comprehensiveness)
+
+Treat T as a full factor crossed with E, M, and L. This creates a 2 (Evidence) x 2 (Source) x 2 (NIPT type) design with continuous moderator (Literacy):
+
+**Regression equation:**
+
+Y = B0 + B1·E + B2·M + B3·L + B4·T + B5·E·M + B6·E·L + B7·M·L + B8·E·T + B9·M·T + B10·L·T + B11·E·M·L + B12·E·M·T + B13·E·L·T + B14·M·L·T + B15·E·M·L·T + covariates + error
+
+- k = 38 (23 covariates + 4 main + 6 two-way + 4 three-way + 1 four-way)
+- **B11 (E×M×L)** = the three-way interaction when T = 0 (NIPT group)
+- **B15 (E×M×L×T)** = the *difference* in the three-way interaction between NIPT-SGD and NIPT
+- Three-way interaction for NIPT-SGD = B11 + B15
+
+**Hierarchical blocks:**
+
+| Block | Predictors Added | F-test Question |
+|---|---|---|
+| 1 | 23 covariates | Baseline |
+| 2 | E, M, L, T | Do factors predict outcomes beyond covariates? |
+| 3 | E×M, E×L, M×L, E×T, M×T, L×T | Any pairwise moderation? |
+| 4 | E×M×L, E×M×T, E×L×T, M×L×T | **Primary:** Does message-literacy congruence exist? |
+| 5 | E×M×L×T | Does the congruence effect differ by NIPT type? |
+
+### Approach C: NIPT Type as Partial Moderator (Pragmatic Middle Ground)
+
+Include T interactions only where theoretically motivated (skip E×M×T and E×M×L×T):
+- k = 36
+- Tests E×M×L (primary), E×T×L, M×T×L
+- Avoids the hard-to-interpret four-way interaction
+
+### Sample Size Comparison
+
+| Approach | k | Base N (f²=0.02) | Adjusted N | Total with Control |
+|---|---|---|---|---|
+| A: NIPT as covariate | 31 | 395 | 618 | 773 |
+| B: NIPT fully crossed | 38 | 395 | 618 | 773 |
+| C: Partial moderator | 36 | 395 | 618 | 773 |
+| **Separate analyses (×2)** | **31** | **395** | **618** | **1,546** |
+
+The base N for the E×M×L interaction test (df_tested = 1) is essentially the same across all combined model approaches because the additional NIPT-related predictors only consume a few extra degrees of freedom.
+
+### Power at N = 900 (720 experimental, excluding control)
+
+| Approach | k | Power at f²=0.02 | Power at f²=0.04 |
+|---|---|---|---|
+| A: NIPT as covariate | 31 | 0.966 | >0.999 |
+| B: NIPT fully crossed | 38 | 0.966 | >0.999 |
+| C: Partial moderator | 36 | 0.966 | >0.999 |
+
+All approaches provide excellent power at N = 900.
+
+### Design Layout with Combined Model
+
+Each participant is randomized to 1 of 5 conditions, then stratified by NIPT type:
+
+```
+┌──────────────┬──────────────┬──────────────┬──────────────┬─────────┐
+│ Stat × Gov   │ Stat × Inf   │ Anecd × Gov  │ Anecd × Inf  │ Control │
+├──────┬───────┼──────┬───────┼──────┬───────┼──────┬───────┼────┬────┤
+│ NIPT │NIPT-  │ NIPT │NIPT-  │ NIPT │NIPT-  │ NIPT │NIPT-  │NIPT│NIPT│
+│      │ SGD   │      │ SGD   │      │ SGD   │      │ SGD   │    │-SGD│
+└──────┴───────┴──────┴───────┴──────┴───────┴──────┴───────┴────┴────┘
+  ~90    ~90     ~90    ~90     ~90    ~90     ~90    ~90    ~90  ~90
+```
+
+All 720 experimental participants (or 900 total) enter ONE regression. This is more efficient than splitting into two separate analyses of 360 each because:
+
+1. **Statistical efficiency** — all participants contribute to every coefficient estimate
+2. **Formal moderation test** — B15 directly tests whether NIPT type moderates the three-way interaction (in separate analyses, you cannot formally compare effects across tables)
+3. **Borrowing strength** — error variance is estimated from ALL participants, giving narrower confidence intervals
+4. **No sample doubling needed**
+
+### Caveat: NIPT-SGD-Specific Outcomes (H3a, H3b)
+
+Panel preferences (44 vs. 66 disorders) and WTP for NIPT-SGD are only measured in the NIPT-SGD stratum. For these outcomes:
+- Only NIPT-SGD participants are included (~450 total, ~360 experimental)
+- k = 30 (no T factor, no control dummy)
+- Power at N = 360: **0.763 for f²=0.02** (underpowered), **0.966 for f²=0.04** (adequate)
+
+If H3 analyses are secondary/exploratory, N = 900 is sufficient. If co-primary, increase to N ≈ 1,250.
+
+### Suggested R Code Skeleton
+
+```r
+# Combined model (Approach B)
+model_full <- lm(outcome ~
+  cov1 + cov2 + ... + cov23 +       # Block 1: covariates
+  E + M + L + T +                     # Block 2: main effects
+  E:M + E:L + M:L +                   # Block 3a: message interactions
+  E:T + M:T + L:T +                   # Block 3b: NIPT interactions
+  E:M:L +                             # Block 4a: primary 3-way
+  E:M:T + E:L:T + M:L:T +            # Block 4b: NIPT-moderated 3-ways
+  E:M:L:T,                            # Block 5: 4-way interaction
+  data = df_experimental)             # control group excluded
+
+# Test primary three-way interaction (Block 4 vs Block 3)
+model_no_3way <- update(model_full, . ~ . - E:M:L - E:M:T - E:L:T - M:L:T - E:M:L:T)
+anova(model_no_3way, model_full)
+
+# Simple slopes for E×M×L
+library(interactions)
+sim_slopes(model_full, pred = E, modx = L, mod2 = M,
+           modx.values = "plus-minus", mod2.values = "each")
+```
+
+---
+
 *Review generated with computational verification via Python/SciPy. All G\*Power calculations independently replicated using the non-central F distribution.*
