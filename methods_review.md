@@ -299,33 +299,126 @@ However, the **revised version is substantially more defensible** for the follow
 
 ---
 
-## 8. Corrected Sample Size Section (Suggested Revision)
+## 8. ~~Corrected Sample Size Section (Initial Suggestion)~~ — SUPERSEDED
 
-> Sample size was calculated using G\*Power 3.1 for hierarchical multiple linear regression, specifically the F-test for R² increase (fixed model), testing the three-way interaction (Evidence Type × Message Source × Genetic Literacy).
->
-> **Parameters:**
-> - Effect size f² = 0.02 (small interaction effect, conservative for three-way interactions based on prior health communication studies)
-> - α = 0.05 (two-tailed)
-> - Power (1−β) = 0.80
-> - Number of tested predictors = 1 (the three-way interaction term)
-> - Total predictors in full model = 30 (3 main effects, 3 two-way interactions, 1 three-way interaction, 23 covariates; control group analyzed separately)
->
-> G\*Power calculation: N = 395 participants for the factorial conditions.
->
-> **Adjustments:**
-> - 20% attrition due to incomplete responses or failed manipulation checks: 395 / 0.80 = 494
-> - 25% additional buffer for adequate power in subgroup analyses (simple slopes at ±1 SD) and binary outcome analyses: 494 × 1.25 = 618
-> - Addition of a control group (1/5 of total): 618 × 5/4 = 773
->
-> **Final target sample size: N = 800 participants** (rounded up), approximately 160 participants per condition (4 experimental + 1 control). [If NIPT and NIPT-SGD analyses are conducted separately, double the experimental conditions to N ≈ 1,400 total.]
->
-> This sample size provides power > 0.96 for detecting a small three-way interaction (f² = 0.02), achieves 29 participants per predictor (well above the recommended 15–20), and is sufficient for planned sensitivity analyses and multiple comparisons.
+*Note: This section was written before the NIPT/NIPT-SGD assignment mechanism was clarified. It assumed NIPT type could be treated as a factor in a combined model. See Section 11 for the final corrected version, which correctly accounts for the two-track parallel experiment design.*
 
 ---
 
 ---
 
-## 9. Combined Model: NIPT Type as a Factor (No Sample Doubling)
+## 9. NIPT vs. NIPT-SGD: Two Parallel Experiments (Doubling IS Justified)
+
+### Clarified Design
+
+Based on clarification from the researcher, the NIPT/NIPT-SGD assignment is **not** random stratification. Instead:
+
+- Participants who have **NOT** undergone NIPT → assigned to **NIPT message conditions**
+- Participants who **HAVE** undergone NIPT → assigned to **NIPT-SGD message conditions**
+
+This creates **10 total conditions** (5 per track):
+
+```
+NIPT TRACK (participants who have NOT done NIPT):
+┌──────────────┬──────────────┬──────────────┬──────────────┬─────────┐
+│  Condition 1 │  Condition 2 │  Condition 3 │  Condition 4 │ Cond 5  │
+│  Stat x Gov  │  Stat x Inf  │  Anecd x Gov │  Anecd x Inf │ Control │
+│  (NIPT msg)  │  (NIPT msg)  │  (NIPT msg)  │  (NIPT msg)  │(no msg) │
+└──────────────┴──────────────┴──────────────┴──────────────┴─────────┘
+
+NIPT-SGD TRACK (participants who HAVE done NIPT):
+┌──────────────┬──────────────┬──────────────┬──────────────┬─────────┐
+│  Condition 6 │  Condition 7 │  Condition 8 │  Condition 9 │ Cond 10 │
+│  Stat x Gov  │  Stat x Inf  │  Anecd x Gov │  Anecd x Inf │ Control │
+│ (SGD msg)    │ (SGD msg)    │ (SGD msg)    │ (SGD msg)    │(no msg) │
+└──────────────┴──────────────┴──────────────┴──────────────┴─────────┘
+```
+
+### Why a Combined Model Is NOT Appropriate
+
+A combined model (treating NIPT type as a factor within one regression) is inappropriate here for three reasons:
+
+1. **NIPT type is confounded with prior behavior.** Non-uptakers see NIPT posts; prior uptakers see NIPT-SGD posts. These are systematically different populations with different knowledge, attitudes, and experience — possibly different genetic literacy distributions.
+
+2. **Different stimuli.** The actual message content differs. "Statistical evidence about NIPT" and "statistical evidence about NIPT-SGD" are substantively different messages. The E x M x L interaction could have different magnitudes or even different directions across the two tracks.
+
+3. **Different or additional outcomes.** NIPT-SGD participants have additional outcomes (panel preference for 44 vs. 66 disorders, WTP for different panels). WTP for NIPT and WTP for NIPT-SGD are not the same construct. "Uptake intention" means something different (deciding to undergo NIPT vs. deciding to extend to NIPT-SGD).
+
+These are effectively **two parallel experiments** requiring independent power — and the original protocol's doubling step was therefore justified.
+
+### Revised Predictor Count (Per Track)
+
+Since each track is analyzed separately, and the control group is analyzed via planned contrasts (not included in the main factorial regression):
+
+| Component | Count |
+|---|---|
+| Covariates | 23 |
+| Main effects: E, M, L | 3 |
+| Two-way interactions: E x M, E x L, M x L | 3 |
+| Three-way interaction: E x M x L | 1 |
+| **Total k** | **30** |
+
+No control group dummy (control analyzed separately). No NIPT type variable (each track analyzed separately).
+
+### Correct G\*Power Calculation (Per Track)
+
+Test: Linear multiple regression — Fixed model, R² increase
+- df_tested = 1 (three-way interaction E x M x L)
+- k_total = 30
+- alpha = 0.05, power = 0.80
+
+| f² | Base N (experimental) | Critical F | Power |
+|---|---|---|---|
+| 0.02 (small) | 395 | 3.867 | 0.801 |
+| 0.03 | 264 | 3.882 | 0.800 |
+| 0.04 (small-to-medium) | 199 | 3.897 | 0.801 |
+| 0.05 | 160 | 3.915 | 0.802 |
+
+### Sample Size Buildup (Per Track, f² = 0.02)
+
+| Step | N | Calculation |
+|---|---|---|
+| G\*Power base (experimental only) | 395 | R² increase, df_tested=1, k=30 |
+| + 20% attrition | 494 | 395 / 0.80 |
+| + 25% buffer for subgroup probing and binary outcomes | 618 | 494 x 1.25 |
+| + control group (1/5 of total) | 773 | 618 x 5/4 |
+| **Rounded per track** | **~650** | |
+| **Total (both tracks)** | **~1,300** | |
+
+### Power at Practical Sample Sizes
+
+| Per track | N experimental | Power (f²=0.02) | Power (f²=0.04) |
+|---|---|---|---|
+| 700 (1,400 total) | 560 | 0.916 | 0.997 |
+| **650 (1,300 total)** | **520** | **0.896** | **0.995** |
+| 625 (1,250 total) | 500 | 0.884 | 0.994 |
+| 500 (1,000 total) | 400 | 0.805 | 0.979 |
+| 400 (800 total) | 320 | 0.713 | 0.946 |
+
+### Recommendation
+
+**N = 650 per track, N = 1,300 total** (130 per condition across 10 conditions). This provides power > 0.89 for f² = 0.02 and > 0.99 for f² = 0.04, with a ratio of 21.7 participants per predictor.
+
+This is close to the original protocol's per-track figure (1,416 / 2 = 708), but now rests on a correctly specified G\*Power calculation and properly justified doubling rationale.
+
+### Why Doubling for Subgroup Probing Is NOT Needed
+
+The original doubles the baseline for "subgroup probing by genetic literacy (high vs low)." This is unnecessary because:
+
+- **Simple slopes analysis** (probing at +/- 1 SD of genetic literacy) is performed within the full regression model using all participants — no sample splitting occurs
+- Doubling would only be needed for a **median-split approach** where separate regressions are run within each half-sample
+- The analysis plan specifies simple slopes, so a modest buffer (25%) is sufficient rather than full doubling
+
+---
+
+## 10. Previously Discussed: Combined Model Approach (Not Applicable)
+
+The following combined model analysis was developed before the NIPT/NIPT-SGD assignment mechanism was clarified. It is retained for reference but **does not apply** to this study design because NIPT type is determined by prior behavior, not random assignment. See Section 9 for the correct analysis.
+
+<details>
+<summary>Click to expand combined model analysis (for reference only)</summary>
+
+### Combined Model: NIPT Type as a Factor (No Sample Doubling)
 
 If NIPT and NIPT-SGD are analyzed within a **single combined model** rather than as separate analyses, sample doubling is unnecessary. There are three approaches:
 
@@ -441,6 +534,37 @@ library(interactions)
 sim_slopes(model_full, pred = E, modx = L, mod2 = M,
            modx.values = "plus-minus", mod2.values = "each")
 ```
+
+</details>
+
+---
+
+## 11. Corrected Sample Size Section (Final Suggested Revision)
+
+> Sample size was calculated using G\*Power 3.1 for hierarchical multiple linear regression testing the three-way interaction (Evidence Type x Message Source x Genetic Literacy) using the F-test for R² increase (fixed model).
+>
+> **Parameters:**
+> - Effect size f² = 0.02 (small interaction effect, conservative for three-way interactions)
+> - alpha = 0.05 (two-tailed)
+> - Power (1 - beta) = 0.80
+> - Number of tested predictors = 1 (the three-way interaction term)
+> - Total predictors in full model = 30 (3 main effects, 3 two-way interactions, 1 three-way interaction, 23 covariates; control group analyzed separately via planned contrasts)
+>
+> G\*Power calculation: N = 395 participants in the four experimental conditions per track.
+>
+> **Adjustments:**
+> - 20% attrition due to incomplete responses or failed manipulation checks: 395 / 0.80 = 494
+> - 25% buffer for subgroup probing (simple slopes at +/-1 SD of genetic literacy) and adequate power for binary outcome analyses: 494 x 1.25 = 618
+> - Addition of control group: 618 x 5/4 = 773
+> - Rounded to N = 650 per track
+>
+> Because participants who have not undergone NIPT are assigned to the NIPT message conditions and participants who have undergone NIPT are assigned to the NIPT-SGD message conditions — constituting two parallel experiments with different populations, different stimuli, and partially different outcome measures — the sample size is calculated independently for each track.
+>
+> **Final target sample size: N = 1,300 participants total**
+> - NIPT track: 650 participants (130 per condition x 5 conditions)
+> - NIPT-SGD track: 650 participants (130 per condition x 5 conditions)
+>
+> This provides power > 0.89 for detecting a small three-way interaction (f² = 0.02), power > 0.99 for small-to-medium interactions (f² = 0.04), and 21.7 participants per predictor (above the recommended 15-20 threshold for reliable interaction detection). The sample size is sufficient for planned simple slopes analyses and sensitivity analyses without model overfitting.
 
 ---
 
